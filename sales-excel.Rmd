@@ -7,6 +7,7 @@ output: github_document
 ```{r load-packages, message=FALSE}
 library(tidyverse)
 library(readxl)
+library(janitor)
 ```
 
 -   Read in the Excel file called `sales.xlsx` from the `data-raw/` folder such that it looks like the following.
@@ -17,6 +18,8 @@ knitr::include_graphics("images/sales-1.png")
 
 ```{r}
 
+sales <- read_excel("data-raw/sales.xlsx", skip = 3, col_names = c("id", "n"))
+
 ```
 
 -   **Stretch goal:** Manipulate the sales data such such that it looks like the following.
@@ -26,5 +29,13 @@ knitr::include_graphics("images/sales-2.png")
 ```
 
 ```{r}
+
+sales %>% 
+  mutate(is_brand_new = str_detect(id, "Brand"),
+brand = if_else(is_brand_new, id, NULL)
+) %>% 
+  fill(brand) %>% 
+  filter(!(is_brand_new)) %>% 
+  select(brand, id, n)
 
 ```
